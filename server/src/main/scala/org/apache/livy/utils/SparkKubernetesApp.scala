@@ -19,15 +19,16 @@ package org.apache.livy.utils
 import java.net.URLEncoder
 import java.util.Collections
 import java.util.concurrent.TimeoutException
-
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.duration.{Deadline, FiniteDuration, MILLISECONDS, Duration => SDuration}
 import scala.concurrent._
-import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
 
+///import io.fabric8.kubernetes.api.model.{ Duration => KDuration}
+//import io.fabric8.kubernetes.api.model.{Duration => KDuration}
 import io.fabric8.kubernetes.api.model._
 import io.fabric8.kubernetes.api.model.extensions.{Ingress, IngressBuilder}
 import io.fabric8.kubernetes.client.{ConfigBuilder, _}
@@ -89,8 +90,10 @@ object SparkKubernetesApp extends Logging {
     this.livyConf = livyConf
 
     cacheLogSize = livyConf.getInt(LivyConf.SPARK_LOGS_SIZE)
-    appLookupTimeout = livyConf.getTimeAsMs(LivyConf.KUBERNETES_APP_LOOKUP_TIMEOUT).milliseconds
-    pollInterval = livyConf.getTimeAsMs(LivyConf.KUBERNETES_POLL_INTERVAL).milliseconds
+    ///appLookupTimeout = livyConf.getTimeAsMs(LivyConf.KUBERNETES_APP_LOOKUP_TIMEOUT).milliseconds
+    appLookupTimeout = new FiniteDuration(livyConf.getTimeAsMs(LivyConf.KUBERNETES_APP_LOOKUP_TIMEOUT), MILLISECONDS )
+    ///pollInterval = livyConf.getTimeAsMs(LivyConf.KUBERNETES_POLL_INTERVAL).milliseconds
+    pollInterval = new FiniteDuration(livyConf.getTimeAsMs(LivyConf.KUBERNETES_POLL_INTERVAL), MILLISECONDS )
 
     sessionLeakageCheckInterval =
       livyConf.getTimeAsMs(LivyConf.KUBERNETES_APP_LEAKAGE_CHECK_INTERVAL)
@@ -246,7 +249,7 @@ class SparkKubernetesApp private[utils] (
   @tailrec
   private def getAppFromTag(
     appTag: String,
-    pollInterval: Duration,
+    pollInterval: SDuration,
     deadline: Deadline): KubernetesApplication = {
     import KubernetesExtensions._
 

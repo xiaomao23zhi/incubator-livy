@@ -209,7 +209,9 @@
     <module>core/scala-2.12</module>
     <module>coverage</module>
     <module>examples</module>
+<!--
     <module>python-api</module>
+-->
     <module>repl</module>
     <module>repl/scala-2.11</module>
     <module>repl/scala-2.12</module>
@@ -1085,10 +1087,10 @@
         <json4s.spark-2.12.version>3.6.6</json4s.spark-2.12.version>
         <json4s.version>${json4s.spark-2.11.version}</json4s.version>
         <spark.bin.download.url>
-          https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+          https://archive.apache.org/dist/spark/spark-3.0.1/spark-3.0.1-bin-hadoop2.7.tgz
         </spark.bin.download.url>
-        <spark.bin.name>spark-3.0.0-bin-hadoop2.7</spark.bin.name>
-        <kubernetes.client.version>4.9.2</kubernetes.client.version>
+        <spark.bin.name>spark-3.0.1-bin-hadoop2.7</spark.bin.name>
+        <kubernetes.client.version>4.13.1</kubernetes.client.version>
         <jackson.version>2.10.3</jackson.version>
       </properties>
     </profile>
