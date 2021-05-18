@@ -47,18 +47,22 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
     conf.set("spark.repl.class.outputDir", outputDir.getAbsolutePath)
 
     val settings = new Settings()
+    settings.debug.value = true
     settings.processArguments(List("-Yrepl-class-based",
       "-Yrepl-outdir", s"${outputDir.getAbsolutePath}"), true)
     settings.usejavacp.value = true
     settings.embeddedDefaults(Thread.currentThread().getContextClassLoader())
 
     sparkILoop = new SparkILoop(None, new JPrintWriter(outputStream, true))
+    sparkILoop.printWelcome()
     sparkILoop.settings = settings
     sparkILoop.createInterpreter()
     sparkILoop.initializeSynchronous()
 
     restoreContextClassLoader {
-      sparkILoop.compilerClasspath
+      sparkILoop.compilerClasspath.foreach( cp => {
+        debug(s" SparkILoop contains Compiler ClassPath ${cp}")
+      })
       sparkILoop.ensureClassLoader
       var classLoader = Thread.currentThread().getContextClassLoader
       while (classLoader != null) {
