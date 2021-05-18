@@ -64,5 +64,14 @@ class SparkInterpreterSpec extends FunSpec with Matchers with LivyBaseUnitTestSu
       ename shouldBe "java.lang.RuntimeException: message"
       traceback shouldBe expectedTraceback
     }
+
+    it("should import an added jar") {
+      val newInterpreter = new SparkInterpreter(null)
+      newInterpreter.start()
+      newInterpreter.addJar("file://./src/test/resources/zippo.jar")
+
+      val result = interpreter.execute(" import zippo._\n")
+      Console.out.println(result)
+    }
   }
 }

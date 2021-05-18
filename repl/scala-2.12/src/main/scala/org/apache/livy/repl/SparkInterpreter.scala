@@ -86,6 +86,11 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
     }
   }
 
+  def addJar(jar : String) : Unit = {
+    sparkILoop.addUrlsToClassPath( new java.net.URL(jar))
+  }
+
+
   override def close(): Unit = synchronized {
     super.close()
 
