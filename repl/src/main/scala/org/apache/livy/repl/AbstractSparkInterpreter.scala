@@ -85,6 +85,7 @@ abstract class AbstractSparkInterpreter extends Interpreter with Logging {
       execute("import sqlContext.implicits._")
       execute("import sqlContext.sql")
       execute("import org.apache.spark.sql.functions._")
+      execute("import zippo._")
     }
   }
 

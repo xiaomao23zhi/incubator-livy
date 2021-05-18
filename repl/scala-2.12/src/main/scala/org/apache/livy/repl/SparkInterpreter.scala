@@ -87,6 +87,7 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
       }
 
       postStart()
+      execute("import zippo._")
     }
   }
 

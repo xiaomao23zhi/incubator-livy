@@ -18,6 +18,7 @@ package org.apache.livy.rsc.driver;
 
 import org.apache.livy.Job;
 import org.apache.livy.JobContext;
+import org.apache.livy.rsc.Utils;
 
 public class AddFileJob implements Job<Object> {
 

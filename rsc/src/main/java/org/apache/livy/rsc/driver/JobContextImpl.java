@@ -31,8 +31,12 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.livy.JobContext;
 import org.apache.livy.rsc.RSCConf;
 import org.apache.livy.rsc.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class JobContextImpl implements JobContext {
+class JobContextImpl implements JobContext  {
+
+  protected static final Logger LOG = LoggerFactory.getLogger(JobContext.class);
 
   private final File localTmpDir;
   private volatile JavaStreamingContext streamingctx;
@@ -144,10 +148,12 @@ class JobContextImpl implements JobContext {
   }
 
   public void addFile(String path) {
+    LOG.info("Adding File " + path);
     driver.addFile(path);
   }
 
   public void addJarOrPyFile(String path) throws Exception {
+    LOG.info("Adding Jar or PyFile " + path);
     driver.addJarOrPyFile(path);
   }
 }
