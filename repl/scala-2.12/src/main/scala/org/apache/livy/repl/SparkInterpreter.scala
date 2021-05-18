@@ -17,17 +17,17 @@
 
 package org.apache.livy.repl
 
+import org.apache.livy.repl.Interpreter.ExecuteResponse
+
 import java.io.File
 import java.net.URLClassLoader
 import java.nio.file.{Files, Paths}
-
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.Completion
 import scala.tools.nsc.interpreter.IMain
 import scala.tools.nsc.interpreter.JPrintWriter
 import scala.tools.nsc.interpreter.NoCompletion
 import scala.tools.nsc.interpreter.Results.Result
-
 import org.apache.spark.SparkConf
 import org.apache.spark.repl.SparkILoop
 
@@ -80,14 +80,19 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
 
           extraJarPath.foreach { p => debug(s"Adding $p to Scala interpreter's class path...") }
           sparkILoop.addUrlsToClassPath(extraJarPath: _*)
+          val rightAfterAdd : ExecuteResponse= execute("import zippo._")
+          info(s" Right After Add Result = ${rightAfterAdd}")
           classLoader = null
         } else {
           classLoader = classLoader.getParent
         }
       }
+      val beforePostStart = execute("import zippo._")
+      info( s" Before Post Start = ${beforePostStart} ")
 
       postStart()
-      execute("import zippo._")
+      val afterPostStart = execute("import zippo._")
+      info( s" After Post Start = ${afterPostStart} ")
     }
   }
 
