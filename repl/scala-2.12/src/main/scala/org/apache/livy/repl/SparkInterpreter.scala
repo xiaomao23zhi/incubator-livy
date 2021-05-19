@@ -92,6 +92,7 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
           classLoader = classLoader.getParent
         }
       }
+    }
     ***/
       sparkILoop.compilerClasspath.foreach( cp => {
         debug(s" SparkILoop contains Compiler ClassPath Affet AddResult ${cp}")
@@ -105,8 +106,8 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
     postStart()
       val afterPostStart = execute("import zippo._")
       info( s" After Post Start = ${afterPostStart} ")
-    }
   }
+
 
   def addJar(jar : String) : Unit = {
     sparkILoop.addUrlsToClassPath( new java.net.URL(jar))
