@@ -50,8 +50,7 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
     settings.debug.value = true
     settings.processArguments(List("-Yrepl-class-based",
       "-Yrepl-outdir", s"${outputDir.getAbsolutePath}"), true)
-    ///settings.usejavacp.value = true
-    settings.usejavacp.value = false
+    settings.usejavacp.value = true
     settings.embeddedDefaults(Thread.currentThread().getContextClassLoader())
 
     sparkILoop = new SparkILoop(None, new JPrintWriter(outputStream, true))
@@ -61,8 +60,7 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
     sparkILoop.initializeSynchronous()
 
 
-    /**
-    restoreContextClassLoader {
+    val extraJars : Seq[java.net.URL] = restoreContextClassLoader {
       sparkILoop.compilerClasspath.foreach( cp => {
         debug(s" SparkILoop contains Compiler ClassPath ${cp}")
       })
@@ -81,20 +79,17 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
               Paths.get(u.toURI).getFileName.toString.contains("org.scala-lang_scala-reflect")
             }
 
-          extraJarPath.foreach { p => debug(s"Adding $p to Scala interpreter's class path...") }
-          sparkILoop.addUrlsToClassPath(extraJarPath: _*)
-          val rightAfterAdd : ExecuteResponse= execute("import zippo._")
-          info(s" Right After Add Result = ${rightAfterAdd}")
-          val zClass = execute(""" val zCl = Class.forName("zippo.ZippoObject") """)
-          info(s"  RUNTIME CLASS PATH AFTER ${zClass} ")
           classLoader = null
+          return extraJarPath
         } else {
           classLoader = classLoader.getParent
         }
       }
+      return Seq.empty
     }
-    ***/
-      sparkILoop.compilerClasspath.foreach( cp => {
+    extraJars.foreach { p => debug(s"Adding $p to Scala interpreter's class path...") }
+    sparkILoop.addUrlsToClassPath(extraJars: _*)
+    sparkILoop.compilerClasspath.foreach( cp => {
         debug(s" SparkILoop contains Compiler ClassPath Affet AddResult ${cp}")
       })
 
