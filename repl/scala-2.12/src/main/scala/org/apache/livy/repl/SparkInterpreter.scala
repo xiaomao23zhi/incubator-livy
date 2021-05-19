@@ -82,11 +82,17 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
           sparkILoop.addUrlsToClassPath(extraJarPath: _*)
           val rightAfterAdd : ExecuteResponse= execute("import zippo._")
           info(s" Right After Add Result = ${rightAfterAdd}")
+          val zClass = execute(""" val zCl = Class.forName("zippo.ZippoObject") """)
+          info(s"  RUNTIME CLASS PATH AFTER ${zClass} ")
           classLoader = null
         } else {
           classLoader = classLoader.getParent
         }
       }
+      sparkILoop.compilerClasspath.foreach( cp => {
+        debug(s" SparkILoop contains Compiler ClassPath Affet AddResult ${cp}")
+      })
+
       val beforePostStart = execute("import zippo._")
       info( s" Before Post Start = ${beforePostStart} ")
 
