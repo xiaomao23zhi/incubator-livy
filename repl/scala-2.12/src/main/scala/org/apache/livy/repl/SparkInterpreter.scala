@@ -50,7 +50,8 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
     settings.debug.value = true
     settings.processArguments(List("-Yrepl-class-based",
       "-Yrepl-outdir", s"${outputDir.getAbsolutePath}"), true)
-    settings.usejavacp.value = true
+    ///settings.usejavacp.value = true
+    settings.usejavacp.value = false
     settings.embeddedDefaults(Thread.currentThread().getContextClassLoader())
 
     sparkILoop = new SparkILoop(None, new JPrintWriter(outputStream, true))
@@ -59,6 +60,8 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
     sparkILoop.createInterpreter()
     sparkILoop.initializeSynchronous()
 
+
+    /**
     restoreContextClassLoader {
       sparkILoop.compilerClasspath.foreach( cp => {
         debug(s" SparkILoop contains Compiler ClassPath ${cp}")
@@ -89,14 +92,17 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
           classLoader = classLoader.getParent
         }
       }
+    ***/
       sparkILoop.compilerClasspath.foreach( cp => {
         debug(s" SparkILoop contains Compiler ClassPath Affet AddResult ${cp}")
       })
 
       val beforePostStart = execute("import zippo._")
       info( s" Before Post Start = ${beforePostStart} ")
+    val zClass = execute(""" val zCl = Class.forName("zippo.ZippoObject") """)
+    info(s"  RUNTIME CLASS PATH AFTER ${zClass} ")
 
-      postStart()
+    postStart()
       val afterPostStart = execute("import zippo._")
       info( s" After Post Start = ${afterPostStart} ")
     }
