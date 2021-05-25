@@ -65,6 +65,7 @@ class SparkInterpreterSpec extends FunSpec with Matchers with LivyBaseUnitTestSu
       traceback shouldBe expectedTraceback
     }
 
+    /**
     it("should import an added jar") {
       val newInterpreter = new SparkInterpreter(null)
       newInterpreter.start()
@@ -73,5 +74,6 @@ class SparkInterpreterSpec extends FunSpec with Matchers with LivyBaseUnitTestSu
       val result = interpreter.execute(" import zippo._\n")
       Console.out.println(result)
     }
+    **/
   }
 }
