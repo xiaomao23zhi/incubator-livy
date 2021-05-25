@@ -17,17 +17,17 @@
 
 package org.apache.livy.repl
 
-import org.apache.livy.repl.Interpreter.ExecuteResponse
-
 import java.io.File
 import java.net.URLClassLoader
 import java.nio.file.{Files, Paths}
+
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.Completion
 import scala.tools.nsc.interpreter.IMain
 import scala.tools.nsc.interpreter.JPrintWriter
 import scala.tools.nsc.interpreter.NoCompletion
 import scala.tools.nsc.interpreter.Results.Result
+
 import org.apache.spark.SparkConf
 import org.apache.spark.repl.SparkILoop
 
@@ -47,23 +47,18 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
     conf.set("spark.repl.class.outputDir", outputDir.getAbsolutePath)
 
     val settings = new Settings()
-    settings.debug.value = true
     settings.processArguments(List("-Yrepl-class-based",
       "-Yrepl-outdir", s"${outputDir.getAbsolutePath}"), true)
     settings.usejavacp.value = true
     settings.embeddedDefaults(Thread.currentThread().getContextClassLoader())
 
     sparkILoop = new SparkILoop(None, new JPrintWriter(outputStream, true))
-    sparkILoop.printWelcome()
     sparkILoop.settings = settings
     sparkILoop.createInterpreter()
     sparkILoop.initializeSynchronous()
 
-
-    val extraJars : Seq[java.net.URL] = restoreContextClassLoader {
-      sparkILoop.compilerClasspath.foreach( cp => {
-        debug(s" SparkILoop contains Compiler ClassPath ${cp}")
-      })
+    restoreContextClassLoader {
+      sparkILoop.compilerClasspath
       sparkILoop.ensureClassLoader
       var classLoader = Thread.currentThread().getContextClassLoader
       while (classLoader != null) {
@@ -79,35 +74,17 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
               Paths.get(u.toURI).getFileName.toString.contains("org.scala-lang_scala-reflect")
             }
 
+          extraJarPath.foreach { p => debug(s"Adding $p to Scala interpreter's class path...") }
+          sparkILoop.addUrlsToClassPath(extraJarPath: _*)
           classLoader = null
-          return extraJarPath
         } else {
           classLoader = classLoader.getParent
         }
       }
-      return Seq.empty
+
+      postStart()
     }
-    extraJars.foreach { p => debug(s"Adding $p to Scala interpreter's class path...") }
-    sparkILoop.addUrlsToClassPath(extraJars: _*)
-    sparkILoop.compilerClasspath.foreach( cp => {
-        debug(s" SparkILoop contains Compiler ClassPath Affet AddResult ${cp}")
-      })
-
-      val beforePostStart = execute("import zippo._")
-      info( s" Before Post Start = ${beforePostStart} ")
-    val zClass = execute(""" val zCl = Class.forName("zippo.ZippoObject") """)
-    info(s"  RUNTIME CLASS PATH AFTER ${zClass} ")
-
-    postStart()
-      val afterPostStart = execute("import zippo._")
-      info( s" After Post Start = ${afterPostStart} ")
   }
-
-
-  def addJar(jar : String) : Unit = {
-    sparkILoop.addUrlsToClassPath( new java.net.URL(jar))
-  }
-
 
   override def close(): Unit = synchronized {
     super.close()
