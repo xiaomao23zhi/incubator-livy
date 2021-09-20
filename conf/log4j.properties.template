@@ -22,3 +22,11 @@ log4j.appender.console.layout=org.apache.log4j.PatternLayout
 log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n
 
 log4j.logger.org.eclipse.jetty=WARN
+
+log4j.logger.org.apache.livy=DEBUG
+log4j.logger.org.spark.repl=DEBUG
+log4j.logger.org.spark.rpc=DEBUG
+log4j.logger.org.spark.rpc.netty=DEBUG
+log4j.logger.org.spark.SparkContext=DEBUG
+log4j.logger.org.spark.scheduler=DEBUG
+

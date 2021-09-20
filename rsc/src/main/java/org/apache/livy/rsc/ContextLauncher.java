@@ -218,6 +218,7 @@ class ContextLauncher {
       }
     }
 
+
     final File confFile = writeConfToFile(conf);
 
     if (ContextLauncher.mockSparkSubmit != null) {
