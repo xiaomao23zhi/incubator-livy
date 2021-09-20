@@ -75,6 +75,8 @@ abstract class AbstractSparkInterpreter extends Interpreter with Logging {
       execute("import spark.implicits._")
       execute("import spark.sql")
       execute("import org.apache.spark.sql.functions._")
+      val postStart = execute("import zippo._")
+      info(s" AfterPostStart -- spark session present is present ${postStart}")
     } else {
       bind("sc", "org.apache.spark.SparkContext", sparkEntries.sc().sc, List("""@transient"""))
       val sqlContext = Option(sparkEntries.hivectx()).getOrElse(sparkEntries.sqlctx())
@@ -84,6 +86,8 @@ abstract class AbstractSparkInterpreter extends Interpreter with Logging {
       execute("import sqlContext.implicits._")
       execute("import sqlContext.sql")
       execute("import org.apache.spark.sql.functions._")
+      val postStart = execute("import zippo._")
+      info(s" AfterPostStart -- no spark session present ${postStart}")
     }
   }
 

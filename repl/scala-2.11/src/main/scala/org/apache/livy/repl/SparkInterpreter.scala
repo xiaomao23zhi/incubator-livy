@@ -19,6 +19,7 @@ package org.apache.livy.repl
 
 import java.io.File
 import java.net.URLClassLoader
+import java.net.URL
 import java.nio.file.{Files, Paths}
 
 import scala.tools.nsc.Settings
@@ -74,7 +75,7 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
               Paths.get(u.toURI).getFileName.toString.contains("org.scala-lang_scala-reflect")
             }
 
-          extraJarPath.foreach { p => debug(s"Adding $p to Scala interpreter's class path...") }
+          extraJarPath.foreach { p => info(s"Adding $p to Scala interpreter's class path...") }
           sparkILoop.addUrlsToClassPath(extraJarPath: _*)
           classLoader = null
         } else {
@@ -84,6 +85,10 @@ class SparkInterpreter(protected override val conf: SparkConf) extends AbstractS
 
       postStart()
     }
+  }
+
+  def addJar(jar : String) : Unit = {
+    sparkILoop.addUrlsToClassPath( new java.net.URL(jar))
   }
 
   override def close(): Unit = synchronized {
