@@ -314,7 +314,8 @@ object InteractiveSession extends Logging {
       builderProperties.put(SPARK_YARN_IS_PYTHON, "true")
     }
 
-    mergeConfList(pySparkFiles, LivyConf.SPARK_PY_FILES)
+    // [LIVY-750] Do not add pyspark archives to spark.submit.pyFiles #281
+    //mergeConfList(pySparkFiles, LivyConf.SPARK_PY_FILES)
 
     val sparkRArchive = if (!LivyConf.TEST_MODE) findSparkRArchive() else None
     sparkRArchive.foreach { archive =>
