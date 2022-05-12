@@ -1068,10 +1068,10 @@
     </profile>
 
     <profile>
-      <id>spark-3.1</id>
+      <id>spark-3.2</id>
       <activation>
         <property>
-          <name>spark-3.1</name>
+          <name>spark-3.2</name>
         </property>
       </activation>
       <properties>
